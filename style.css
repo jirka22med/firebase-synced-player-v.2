@@ -929,121 +929,169 @@ footer a:hover {
 }
 
 
- /* 🚀 MINIMÁLNÍ STYLY PRO TONE.METER */
-        .tone-meter-container {
-            background: linear-gradient(135deg, #001122, #002244);
-            border: 2px solid #00ff88;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px auto;
+.tone-meter-container {
             max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 15px;
+            border: 2px solid #00ff88;
+            color: white;
             font-family: 'Courier New', monospace;
-            color: #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
         }
-        
+
         .tone-meter-title {
             text-align: center;
             font-size: 24px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #00ff88;
-        }
-        
-        .tone-meter-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .tone-meter-btn {
-            background: linear-gradient(145deg, #003366, #004477);
-            border: 1px solid #00ff88;
+            font-weight: bold;
             color: #00ff88;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        
-        .tone-meter-btn:hover {
-            background: linear-gradient(145deg, #004477, #005588);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
-            transform: translateY(-2px);
-        }
-        
-        .tone-meter-btn:active {
-            transform: translateY(0);
-        }
-        
-        .tone-meter-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .tone-meter-display {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
             margin-bottom: 20px;
         }
-        
-        .tone-meter-info {
-            background: rgba(0, 34, 68, 0.7);
-            border: 1px solid #0088ff;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .tone-meter-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-        
-        .tone-meter-value {
-            font-size: 20px;
-            font-weight: bold;
-            text-shadow: 0 0 8px currentColor;
-        }
-        
-        .tone-meter-visualizer {
-            width: 100%;
-            height: 200px;
-            border: 1px solid #00ff88;
-            border-radius: 8px;
-            background: #000811;
-        }
-        
+
         .tone-meter-status {
             text-align: center;
             padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             font-weight: bold;
+        }
+
+        .tone-meter-status.active {
+            background-color: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+        }
+
+        .tone-meter-status.inactive {
+            background-color: rgba(136, 136, 136, 0.2);
+            border: 1px solid #888;
+        }
+
+        .tone-meter-status.error {
+            background-color: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+        }
+
+        .tone-meter-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tone-meter-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00ff88, #0088ff);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
-        
-        .tone-meter-status.active {
-            background: rgba(0, 255, 136, 0.2);
+
+        .tone-meter-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .tone-meter-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* NOVÉ STYLY PRO OVLÁDÁNÍ MIKROFONU */
+        .tone-meter-mic-controls {
+            background: rgba(0, 255, 136, 0.1);
             border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tone-meter-mic-controls h3 {
+            margin: 0 0 15px 0;
+            text-align: center;
+            color: #00ff88;
+            font-size: 16px;
+        }
+
+        .tone-meter-slider-group {
+            margin-bottom: 15px;
+        }
+
+        .tone-meter-slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .tone-meter-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .tone-meter-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tone-meter-slider::-webkit-slider-thumb:hover {
+            background: #00cc6a;
+            transform: scale(1.1);
+        }
+
+        .tone-meter-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+            border: none;
+        }
+
+        .tone-meter-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tone-meter-info {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .tone-meter-label {
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        .tone-meter-value {
+            font-size: 20px;
+            font-weight: bold;
             color: #00ff88;
         }
-        
-        .tone-meter-status.inactive {
-            background: rgba(255, 136, 0, 0.2);
-            border: 1px solid #ff8800;
-            color: #ff8800;
+
+        .tone-meter-visualizer {
+            width: 100%;
+            height: 150px;
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            background: #001122;
         }
-        
-        .tone-meter-status.error {
-            background: rgba(255, 0, 68, 0.2);
-            border: 1px solid #ff0044;
-            color: #ff0044;
-        }
+
 
