@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+ <html lang="cs">
+ <link rel="icon" href="https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_82x82.jpg?ver=1" type="image/png">
+
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Star Trek: Hudební Přehravač</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   
+ <div class="player-content-wrapper">
+        
+    
+     
+  <div class="background-image-container">
+   <img src="">
+  </div>
+  
+  
+    
+     <audio id="audioPlayer">
+    <source id="audioSource" src="" type="audio/mpeg">
+</audio>
+
+
+  <div class="player-container">
+      
+      <h1 class="header-title"  >STAR TREK: HUDEBNÍ PŘEHRAVAČ</h1>
+    <h2 id="trackTitle">Vyberte skladbu</h2>
+
+
+      <div class="time-controls">
+        <span id="currentTime">
+          <span class="time-part">00</span><span class="time-separator">:</span><span class="time-part">00</span><span class="time-separator">:</span><span class="time-part">00</span>
+        </span>
+        <input type="range" id="progress-bar" min="0" max="100" value="0">
+        <span id="duration">
+          <span class="time-part">00</span><span class="time-separator">:</span><span class="time-part">00</span><span class="time-separator">:</span><span class="time-part">00</span>
+        </span>
+      </div>
+      
+      <div id="control-panel">
+        <div class="controls">
+          <button id="prev-button" title="Předchozí (Šipka vlevo)">◀️⬅️</button>
+          <button id="play-button" title="Přehrát (Mezerník/P)">🚀</button>
+          <button id="pause-button" title="Pauza (Mezerník/P)">🖖⏸️</button>
+          <button id="next-button" title="Další (Šipka vpravo)">▶️➡️</button>
+          <button id="loop-button" title="Opakovat (L)">🔁</button>
+          <button id="shuffle-button" title="Náhodně (Vypnuto)">🔀</button>
+          <button id="reset-button" title="Restartovat skladbu (R)">🔄</button>
+          <button id="fullscreen-toggle" title="Celá obrazovka (F)">⛶</button>
+          <button id="toggle-info-button" title="Zobrazit/Skrýt klávesové zkratky">📋</button>
+          <button id="reload-button" title="Obnovit stránku">🔄</button>
+          <button id="toggle-playlist-button" title="Zobrazit/Skrýt playlist">📜</button> 
+          <button id="timer-button" title="Časovač vypnutí (T)">⏰</button>
+          <button onclick="window.clearAllAudioPlayerData()">🗑️❌🔄</button> 
+          <button class="perf-monitor-btn">🔍📊</button>
+           <button id="jirik-manual-opener-btn" >🧾</button>  
+        </div>
+       
+          
+        <div class="volume-controls">
+          <button id="mute-button" title="Ztlumit (M)">🔊</button>
+          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.1" title="Hlasitost (A/D)">
+          <span id="volume-value">10</span>
+        </div>
+      </div>
+      
+      
+
+      <div class="playlist" id="playlist" style="display: block;"> 
+          
+          </div>
+       <div class="sync-status-container">
+    <div class="sync-message">
+        ⚠ Probíhá synchronizace dat... ⚠
+   
+</div>
+  
+      </div>
+    </div> 
+    <div class="hlavni-kontejner-pro-cas-a-casovac">
+  <div class="time-calendar-wrapper">
+    <div class="time">
+      <div class="time-colon"><div class="time-text"><span class="num hours">00</span><span class="text">H</span></div></div>
+      <span class="colon">:</span>
+      <div class="time-colon"><div class="time-text"><span class="num minutes">00</span><span class="text">M</span></div></div>
+      <span class="colon">:</span>
+      <div class="time-colon"><div class="time-text"><span class="num seconds">00</span><span class="text">S</span></div></div>
+    </div>
+    <div class="calendar"><div class="date" id="currentDate"></div></div>
+  </div>
+
+  <div class="timer-container" id="timer-container">
+    <div class="timer-display">
+      <span id="timer-minutes">15</span>:<span id="timer-seconds">00</span>
+    </div>
+    <div class="timer-controls">
+      <button id="timer-5">5 min</button>
+      <button id="timer-15">15 min</button>
+      <button id="timer-30">30 min</button>
+      <button id="timer-60">60 min</button>
+      <button id="timer-start">Start</button>
+      <button id="timer-stop">Stop</button>
+    </div>
+  </div>
+</div>
+   
+      <div class="keyboard-container">
+        <div id="popisky">
+    <div class="tone-meter-container">
+        
+        <div class="tone-meter-title">
+            🎵 TONE.METER 🎵
+        </div>
+        
+        <div class="tone-meter-status inactive" id="statusIndicator">
+            ⏹️ PŘIPRAVEN K TESTOVÁNÍ
+        </div>
+        
+        <div class="tone-meter-controls">
+            <button class="tone-meter-btn" id="startBtn">🎤 START</button>
+            <button class="tone-meter-btn" id="stopBtn" disabled>⏹️ STOP</button>
+        </div>
+        
+        <div class="tone-meter-display">
+            <div class="tone-meter-info">
+                <div class="tone-meter-label">HLASITOST</div>
+                <div class="tone-meter-value" id="volumeValue">0%</div>
+            </div>
+            <div class="tone-meter-info">
+                <div class="tone-meter-label">FREKVENCE</div>
+                <div class="tone-meter-value" id="frequencyValue">0 Hz</div>
+            </div>
+            <div class="tone-meter-info">
+                <div class="tone-meter-label">NOTA</div>
+                <div class="tone-meter-value" id="noteValue">---</div>
+            </div>
+        </div>
+        
+        <canvas class="tone-meter-visualizer" id="visualizerCanvas"></canvas>
+    </div> </div> </div>
+      
+      <div id="notification"></div>
+      <div class="fade-indicator">  
+       </div>
+    <footer>
+      &copy; <span id="currentYear"  ></span> Star Trek: Hudební Přehravač | Vytvořeno s láskou ke Star Treku
+    </footer>
+  </div> 
+    <!-- Firebase SDK - musí být PŘED audioFirebaseFunctions.js -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+ 
+     <script src="myPlaylist.js"></script> 
+    <!-- Teprve potom tvůj soubor -->
+<script src="audioFirebaseFunctions.js"></script>
+ <script src="universalni-perfomens-monitor.js" defer ></script>
+    <script src="jirkuv-hlidac.js"></script>
+<script src="script.js"></script>
+ <!--  <script src="audiou-vizuace.js"></script> -->
+  <script src="notificationFix.js"></script>
+<script src="autoFade.js"></script>  
+    
+</body>
+</html>
