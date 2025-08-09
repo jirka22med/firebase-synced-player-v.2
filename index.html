@@ -110,7 +110,7 @@
    
       <div class="keyboard-container">
         <div id="popisky">
-    <div class="tone-meter-container">
+     <div class="tone-meter-container">
         
         <div class="tone-meter-title">
             🎵 TONE.METER 🎵
@@ -118,6 +118,29 @@
         
         <div class="tone-meter-status inactive" id="statusIndicator">
             ⏹️ PŘIPRAVEN K TESTOVÁNÍ
+        </div>
+        
+        <!-- SEKCE PRO OVLÁDÁNÍ MIKROFONU -->
+        <div class="tone-meter-mic-controls">
+            <h3>🎚️ NASTAVENÍ MIKROFONU</h3>
+            
+            <div class="tone-meter-slider-group">
+                <div class="tone-meter-slider-label">
+                    <span>HLASITOST VSTUPU</span>
+                    <span id="inputVolumeValue">100%</span>
+                </div>
+                <input type="range" min="0" max="900" value="100" class="tone-meter-slider" id="inputVolumeSlider">
+                <div style="font-size: 10px; color: #888; text-align: center; margin-top: 2px;">0% - 900% (Extrémní zesílení)</div>
+            </div>
+            
+            <div class="tone-meter-slider-group">
+                <div class="tone-meter-slider-label">
+                    <span>BOOST MIKROFONU</span>
+                    <span id="micBoostValue">1.0x</span>
+                </div>
+                <input type="range" min="10" max="900" value="100" class="tone-meter-slider" id="micBoostSlider">
+                <div style="font-size: 10px; color: #888; text-align: center; margin-top: 2px;">0.1x - 9.0x (Pro slabé signály)</div>
+            </div>
         </div>
         
         <div class="tone-meter-controls">
@@ -160,11 +183,9 @@
  <script src="universalni-perfomens-monitor.js" defer ></script>
     <script src="jirkuv-hlidac.js"></script>
 <script src="script.js"></script>
-   <script src="audiou-vizuace.js"></script> 
+   <script src="audiou-vizuace.js"></script>  
   <script src="notificationFix.js"></script>
-  <script src="autoFade.js"></script> 
+<script src="autoFade.js"></script>  
     
 </body>
 </html>
-
-
