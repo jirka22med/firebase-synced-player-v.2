@@ -108,16 +108,32 @@
   </div>
 </div>
    
-      <div class="keyboard-container">
-        <div id="popisky">
-     <div class="tone-meter-container">
+      <!-- <div class="keyboard-container">
+        <div id="popisky">-->
+         <div class="tone-meter-container">
         
         <div class="tone-meter-title">
-            🎵 TONE.METER 🎵
+            🎵 TONE.METER ENHANCED 🎵
         </div>
         
         <div class="tone-meter-status inactive" id="statusIndicator">
             ⏹️ PŘIPRAVEN K TESTOVÁNÍ
+        </div>
+        
+        <!-- KALIBRACE A4 -->
+        <div class="tone-meter-calibration">
+            <h3>🎼 KALIBRACE A4 FREKVENCE</h3>
+            
+            <div class="tone-meter-a4-control">
+                <span style="color: #ccc;">A4 =</span>
+                <input type="number" min="400" max="480" value="440" class="tone-meter-a4-input" id="a4FreqInput">
+                <span style="color: #ccc;">Hz</span>
+                <button class="tone-meter-a4-reset" id="resetA4Btn">Reset</button>
+            </div>
+            
+            <div class="tone-meter-calibration-info">
+                Standardní A4 = 440 Hz | Barokní A4 = 415 Hz | Moderní A4 = 442-444 Hz
+            </div>
         </div>
         
         <!-- SEKCE PRO OVLÁDÁNÍ MIKROFONU -->
@@ -141,11 +157,51 @@
                 <input type="range" min="10" max="900" value="100" class="tone-meter-slider" id="micBoostSlider">
                 <div style="font-size: 10px; color: #888; text-align: center; margin-top: 2px;">0.1x - 9.0x (Pro slabé signály)</div>
             </div>
+            
+            <div class="tone-meter-calibration-info" id="micCalibrationInfo">
+                Automatická kalibrace citlivosti se spustí po startu měření
+            </div>
+        </div>
+        
+        <!-- NOVÝ: VIZUÁLNÍ TUNER -->
+        <div class="tone-meter-tuner">
+            
+            
+            <div class="tone-meter-tuner-display">
+                <div class="tone-meter-current-note" id="tunerNote">---</div>
+                
+                <div class="tone-meter-tuner-needle-container">
+                    <div class="tone-meter-tuner-scale">
+                        <!-- Stupnice -50 až +50 centů -->
+                        <div class="tone-meter-scale-mark" style="left: 10%;"></div>
+                        <div class="tone-meter-scale-mark" style="left: 20%;"></div>
+                        <div class="tone-meter-scale-mark" style="left: 30%;"></div>
+                        <div class="tone-meter-scale-mark" style="left: 40%;"></div>
+                        <div class="tone-meter-scale-mark major center" style="left: 50%;"></div>
+                        <div class="tone-meter-scale-mark" style="left: 60%;"></div>
+                        <div class="tone-meter-scale-mark" style="left: 70%;"></div>
+                        <div class="tone-meter-scale-mark" style="left: 80%;"></div>
+                        <div class="tone-meter-scale-mark" style="left: 90%;"></div>
+                    </div>
+                    <div class="tone-meter-tuner-needle" id="tunerNeedle"></div>
+                </div>
+                
+                <div class="tone-meter-cent-display">
+                    <span style="color: #6666ff;">♭ FLAT</span>
+                    <div class="tone-meter-cent-value" id="centValue">0¢</div>
+                    <span style="color: #ff6666;">SHARP ♯</span>
+                </div>
+                
+                <div class="tone-meter-frequency-diff" id="frequencyDiff">
+                    Cílová frekvence: --- Hz
+                </div>
+            </div>
         </div>
         
         <div class="tone-meter-controls">
             <button class="tone-meter-btn" id="startBtn">🎤 START</button>
             <button class="tone-meter-btn" id="stopBtn" disabled>⏹️ STOP</button>
+            <button class="tone-meter-btn calibrate" id="calibrateBtn" disabled>🔧 KALIBRACE</button>
         </div>
         
         <div class="tone-meter-display">
@@ -164,7 +220,8 @@
         </div>
         
         <canvas class="tone-meter-visualizer" id="visualizerCanvas"></canvas>
-    </div> </div> </div>
+    </div>
+
       
       <div id="notification"></div>
       <div class="fade-indicator">  
