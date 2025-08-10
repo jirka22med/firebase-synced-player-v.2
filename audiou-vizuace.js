@@ -1,5 +1,5 @@
-      /**
-         * 🚀 UNIVERZÁLNÍ TONE.METER - s ovládáním mikrofonu
+ /**
+         * 🚀 UNIVERZÁLNÍ TONE.METER ENHANCED - s A4 kalibrací a auto-kalibrací mikrofonu
          */
         class ToneMeter {
             constructor(options = {}) {
@@ -10,7 +10,8 @@
                     maxDecibels: options.maxDecibels || -10,
                     updateInterval: options.updateInterval || 16,
                     onToneDetected: options.onToneDetected || null,
-                    onVolumeChange: options.onVolumeChange || null
+                    onVolumeChange: options.onVolumeChange || null,
+                    onCalibrationUpdate: options.onCalibrationUpdate || null
                 };
 
                 this.audioContext = null;
@@ -26,6 +27,18 @@
                 this.micBoost = 1.0;
                 this.microphoneStream = null;
                 this.microphonePermissionGranted = false;
+                
+                // NOVÉ: Kalibrace A4
+                this.a4Frequency = 440; // Standardní A4
+                
+                // NOVÉ: Auto-kalibrace mikrofonu
+                this.isCalibrating = false;
+                this.calibrationSamples = [];
+                this.calibrationDuration = 3000; // 3 sekundy
+                this.calibrationStartTime = 0;
+                this.optimalGain = 1.0;
+                this.volumeHistory = [];
+                this.maxHistoryLength = 50;
                 
                 this.init();
             }
@@ -52,9 +65,81 @@
                 }
             }
 
+            // NOVÉ: Nastavení A4 frekvence
+            setA4Frequency(frequency) {
+                this.a4Frequency = Math.max(400, Math.min(480, frequency));
+                console.log('ToneMeter: A4 frekvence nastavena na', this.a4Frequency, 'Hz');
+            }
+
+            // NOVÉ: Spuštění kalibrace mikrofonu
+            async startCalibration() {
+                if (!this.isActive) {
+                    console.error('ToneMeter: Nelze kalibrovat - analyzér není spuštěn.');
+                    return;
+                }
+
+                this.isCalibrating = true;
+                this.calibrationSamples = [];
+                this.calibrationStartTime = Date.now();
+                
+                console.log('ToneMeter: Spouštím kalibraci mikrofonu...');
+                
+                if (this.options.onCalibrationUpdate) {
+                    this.options.onCalibrationUpdate({
+                        phase: 'start',
+                        message: 'Začíná kalibrace - mluvte normálně',
+                        progress: 0
+                    });
+                }
+
+                // Kalibrace bude probíhat během normální analýzy
+                setTimeout(() => {
+                    this.finishCalibration();
+                }, this.calibrationDuration);
+            }
+
+            // NOVÉ: Dokončení kalibrace
+            finishCalibration() {
+                if (!this.isCalibrating) return;
+
+                this.isCalibrating = false;
+                
+                if (this.calibrationSamples.length > 0) {
+                    // Vypočítáme průměrnou hlasitost
+                    const avgVolume = this.calibrationSamples.reduce((sum, vol) => sum + vol, 0) / this.calibrationSamples.length;
+                    
+                    // Ideální hlasitost je kolem 30-60%
+                    const targetVolume = 45;
+                    this.optimalGain = targetVolume / Math.max(avgVolume, 1);
+                    this.optimalGain = Math.max(0.1, Math.min(5.0, this.optimalGain));
+                    
+                    // Aplikujeme optimální zesílení
+                    this.setMicBoost(this.optimalGain * 100);
+                    
+                    console.log('ToneMeter: Kalibrace dokončena - optimální zesílení:', this.optimalGain);
+                    
+                    if (this.options.onCalibrationUpdate) {
+                        this.options.onCalibrationUpdate({
+                            phase: 'complete',
+                            message: `Kalibrace dokončena - nastaveno ${this.optimalGain.toFixed(1)}x`,
+                            progress: 100,
+                            optimalGain: this.optimalGain
+                        });
+                    }
+                } else {
+                    console.log('ToneMeter: Kalibrace neúspěšná - žádné vzorky.');
+                    if (this.options.onCalibrationUpdate) {
+                        this.options.onCalibrationUpdate({
+                            phase: 'error',
+                            message: 'Kalibrace neúspěšná - zkuste znovu',
+                            progress: 0
+                        });
+                    }
+                }
+            }
+
             // Získání nebo obnovení mikrofonu
             async getMicrophoneStream() {
-                // Pokud už máme aktivní stream, použijeme ho
                 if (this.microphoneStream && this.microphoneStream.active) {
                     console.log('ToneMeter: Používám existující stream mikrofonu.');
                     return this.microphoneStream;
@@ -75,7 +160,6 @@
                     this.microphonePermissionGranted = true;
                     this.storeMicrophonePermission(true);
                     
-                    // Uložíme ID mikrofonu pro příště
                     const audioTracks = stream.getAudioTracks();
                     if (audioTracks.length > 0) {
                         const deviceId = audioTracks[0].getSettings().deviceId;
@@ -92,7 +176,6 @@
                 }
             }
 
-            // Uložení stavu povolení
             storeMicrophonePermission(granted) {
                 try {
                     const data = { granted: granted, timestamp: Date.now() };
@@ -103,7 +186,6 @@
                 }
             }
 
-            // Získání uloženého stavu
             getStoredMicrophonePermission() {
                 try {
                     const data = window.toneMeterMicPermission;
@@ -117,7 +199,6 @@
                 return false;
             }
 
-            // Uložení ID mikrofonu
             storeMicrophoneId(deviceId) {
                 try {
                     window.toneMeterMicDeviceId = deviceId;
@@ -126,7 +207,6 @@
                 }
             }
 
-            // Získání ID mikrofonu
             getStoredMicrophoneId() {
                 try {
                     return window.toneMeterMicDeviceId || undefined;
@@ -150,6 +230,14 @@
                     
                     this.isActive = true;
                     this.startAnalysis();
+                    
+                    // NOVÉ: Automatická kalibrace po 2 sekundách
+                    setTimeout(() => {
+                        if (this.isActive) {
+                            this.startCalibration();
+                        }
+                    }, 2000);
+                    
                     console.log('ToneMeter: Analýza zvuku spuštěna.');
                 } catch (error) {
                     console.error('ToneMeter start error:', error);
@@ -157,7 +245,6 @@
                 }
             }
 
-            // Nastavení hlasitosti vstupu
             setInputVolume(volume) {
                 this.inputVolume = volume / 100;
                 if (this.gainNode) {
@@ -165,7 +252,6 @@
                 }
             }
 
-            // Nastavení boost mikrofonu
             setMicBoost(boost) {
                 this.micBoost = boost / 100;
                 if (this.gainNode) {
@@ -181,6 +267,31 @@
                     this.currentVolume = this.calculateVolume();
                     this.dominantFrequency = this.findDominantFrequency();
                     
+                    // NOVÉ: Tuner kalkulace
+                this.tunerData = this.calculateTunerData(this.dominantFrequency);
+                
+                // NOVÉ: Ukládání vzorků během kalibrace
+                    if (this.isCalibrating) {
+                        this.calibrationSamples.push(this.currentVolume);
+                        
+                        const elapsed = Date.now() - this.calibrationStartTime;
+                        const progress = Math.min((elapsed / this.calibrationDuration) * 100, 100);
+                        
+                        if (this.options.onCalibrationUpdate) {
+                            this.options.onCalibrationUpdate({
+                                phase: 'progress',
+                                message: `Kalibrace probíhá... ${Math.round(progress)}%`,
+                                progress: progress
+                            });
+                        }
+                    }
+                    
+                    // Historie hlasitosti pro lepší analýzu
+                    this.volumeHistory.push(this.currentVolume);
+                    if (this.volumeHistory.length > this.maxHistoryLength) {
+                        this.volumeHistory.shift();
+                    }
+                    
                     if (this.options.onVolumeChange) {
                         this.options.onVolumeChange(this.currentVolume);
                     }
@@ -189,7 +300,8 @@
                         this.options.onToneDetected({
                             frequency: this.dominantFrequency,
                             volume: this.currentVolume,
-                            note: this.frequencyToNote(this.dominantFrequency)
+                            note: this.frequencyToNote(this.dominantFrequency),
+                            tuner: this.tunerData
                         });
                     }
                     
@@ -222,12 +334,64 @@
                 return Math.round(frequency);
             }
 
+            // NOVÉ: Výpočet dat pro tuner
+            calculateTunerData(frequency) {
+                if (frequency < 80) {
+                    return {
+                        note: null,
+                        cents: 0,
+                        targetFrequency: 0,
+                        isInTune: false,
+                        deviation: 0
+                    };
+                }
+
+                const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                const C0 = this.a4Frequency * Math.pow(2, -4.75);
+                
+                if (frequency <= C0) {
+                    return {
+                        note: null,
+                        cents: 0,
+                        targetFrequency: 0,
+                        isInTune: false,
+                        deviation: 0
+                    };
+                }
+
+                // Výpočet nejbližší noty
+                const h = 12 * Math.log2(frequency / C0);
+                const nearestSemitone = Math.round(h);
+                const octave = Math.floor(nearestSemitone / 12);
+                const noteIndex = nearestSemitone % 12;
+                
+                // Cílová frekvence nejbližší noty
+                const targetFrequency = C0 * Math.pow(2, nearestSemitone / 12);
+                
+                // Rozdíl v centech (1 semitón = 100 centů)
+                const cents = Math.round((h - nearestSemitone) * 100);
+                
+                // Je v ladění? (tolerance ±5 centů)
+                const isInTune = Math.abs(cents) <= 5;
+                
+                const note = notes[noteIndex] + octave;
+                const deviation = frequency - targetFrequency;
+
+                return {
+                    note: note,
+                    cents: cents,
+                    targetFrequency: Math.round(targetFrequency * 10) / 10,
+                    isInTune: isInTune,
+                    deviation: Math.round(deviation * 10) / 10
+                };
+            }
+
+            // UPRAVENÉ: Použití nastavitelné A4 frekvence
             frequencyToNote(frequency) {
                 if (frequency < 80) return null;
                 
                 const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-                const A4 = 440;
-                const C0 = A4 * Math.pow(2, -4.75);
+                const C0 = this.a4Frequency * Math.pow(2, -4.75); // Výpočet C0 na základě A4
                 
                 if (frequency > C0) {
                     const h = Math.round(12 * Math.log2(frequency / C0));
@@ -240,6 +404,7 @@
 
             stop() {
                 this.isActive = false;
+                this.isCalibrating = false;
                 if (this.animationId) {
                     clearTimeout(this.animationId);
                     this.animationId = null;
@@ -254,7 +419,6 @@
                 console.log('ToneMeter: Analýza zvuku zastavena (stream zůstává aktivní).');
             }
 
-            // Úplné ukončení včetně streamu
             destroy() {
                 this.stop();
                 if (this.microphoneStream) {
@@ -282,7 +446,13 @@
                     if (!this.isActive) return;
                     
                     ctx.clearRect(0, 0, width, height);
-                    ctx.fillStyle = '#001122';
+                    
+                    // Pozadí s indikátorem kalibrace
+                    if (this.isCalibrating) {
+                        ctx.fillStyle = '#332200';
+                    } else {
+                        ctx.fillStyle = '#001122';
+                    }
                     ctx.fillRect(0, 0, width, height);
                     
                     const barWidth = width / this.dataArray.length * 2;
@@ -291,19 +461,35 @@
                     for (let i = 0; i < this.dataArray.length; i++) {
                         const barHeight = (this.dataArray[i] / 255) * height;
                         
-                        const gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
-                        gradient.addColorStop(0, '#00ff88');
-                        gradient.addColorStop(0.5, '#0088ff');
-                        gradient.addColorStop(1, '#002244');
+                        let gradient;
+                        if (this.isCalibrating) {
+                            gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
+                            gradient.addColorStop(0, '#ffaa00');
+                            gradient.addColorStop(0.5, '#ff8800');
+                            gradient.addColorStop(1, '#332200');
+                        } else {
+                            gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
+                            gradient.addColorStop(0, '#00ff88');
+                            gradient.addColorStop(0.5, '#0088ff');
+                            gradient.addColorStop(1, '#002244');
+                        }
                         
                         ctx.fillStyle = gradient;
                         ctx.fillRect(x, height - barHeight, barWidth, barHeight);
                         x += barWidth + 1;
                     }
                     
-                    ctx.fillStyle = '#00ff88';
+                    // Text info
+                    ctx.fillStyle = this.isCalibrating ? '#ffaa00' : '#00ff88';
                     ctx.font = '14px monospace';
-                    ctx.fillText(`${this.currentVolume}% | ${this.dominantFrequency}Hz | ${this.frequencyToNote(this.dominantFrequency) || 'N/A'}`, 10, 20);
+                    const noteText = this.frequencyToNote(this.dominantFrequency) || 'N/A';
+                    ctx.fillText(`${this.currentVolume}% | ${this.dominantFrequency}Hz | ${noteText} | A4=${this.a4Frequency}Hz`, 10, 20);
+                    
+                    if (this.isCalibrating) {
+                        ctx.fillStyle = '#ffaa00';
+                        ctx.font = '12px monospace';
+                        ctx.fillText('🔧 KALIBRACE PROBÍHÁ...', 10, height - 10);
+                    }
                     
                     requestAnimationFrame(draw);
                 };
@@ -315,6 +501,8 @@
             getVolume() { return this.currentVolume; }
             getFrequency() { return this.dominantFrequency; }
             getNote() { return this.frequencyToNote(this.dominantFrequency); }
+            getA4Frequency() { return this.a4Frequency; }
+            getOptimalGain() { return this.optimalGain; }
         }
 
         window.ToneMeter = ToneMeter;
@@ -323,6 +511,7 @@
             const DOM = {
                 startBtn: document.getElementById('startBtn'),
                 stopBtn: document.getElementById('stopBtn'),
+                calibrateBtn: document.getElementById('calibrateBtn'),
                 volumeValue: document.getElementById('volumeValue'),
                 frequencyValue: document.getElementById('frequencyValue'),
                 noteValue: document.getElementById('noteValue'),
@@ -331,7 +520,15 @@
                 inputVolumeSlider: document.getElementById('inputVolumeSlider'),
                 inputVolumeValue: document.getElementById('inputVolumeValue'),
                 micBoostSlider: document.getElementById('micBoostSlider'),
-                micBoostValue: document.getElementById('micBoostValue')
+                micBoostValue: document.getElementById('micBoostValue'),
+                a4FreqInput: document.getElementById('a4FreqInput'),
+                resetA4Btn: document.getElementById('resetA4Btn'),
+                micCalibrationInfo: document.getElementById('micCalibrationInfo'),
+                // NOVÉ: Tuner prvky
+                tunerNote: document.getElementById('tunerNote'),
+                tunerNeedle: document.getElementById('tunerNeedle'),
+                centValue: document.getElementById('centValue'),
+                frequencyDiff: document.getElementById('frequencyDiff')
             };
 
             if (!DOM.startBtn || !DOM.stopBtn || !DOM.volumeValue || !DOM.frequencyValue || !DOM.noteValue || !DOM.statusIndicator || !DOM.canvas) {
@@ -340,6 +537,23 @@
             }
 
             let toneMeter = null;
+
+            // NOVÉ: A4 kalibrace
+            DOM.a4FreqInput.addEventListener('input', function() {
+                const freq = parseFloat(this.value);
+                if (toneMeter && freq >= 400 && freq <= 480) {
+                    toneMeter.setA4Frequency(freq);
+                    console.log('A4 frekvence změněna na:', freq, 'Hz');
+                }
+            });
+
+            DOM.resetA4Btn.addEventListener('click', function() {
+                DOM.a4FreqInput.value = 440;
+                if (toneMeter) {
+                    toneMeter.setA4Frequency(440);
+                }
+                console.log('A4 frekvence resetována na 440 Hz');
+            });
 
             // Ovládání posuvníků
             DOM.inputVolumeSlider.addEventListener('input', function() {
@@ -359,10 +573,18 @@
                 }
             });
 
+            // NOVÉ: Tlačítko pro manuální kalibraci
+            DOM.calibrateBtn.addEventListener('click', function() {
+                if (toneMeter && toneMeter.isRunning()) {
+                    DOM.statusIndicator.className = 'tone-meter-status calibrating';
+                    DOM.statusIndicator.textContent = '🔧 KALIBRACE MIKROFONU...';
+                    toneMeter.startCalibration();
+                }
+            });
+
             DOM.startBtn.addEventListener('click', async function() {
                 console.log('ToneMeter: Start button clicked.');
                 
-                // Zkontrolujeme uložené povolení
                 if (toneMeter && toneMeter.getStoredMicrophonePermission()) {
                     DOM.statusIndicator.className = 'tone-meter-status active';
                     DOM.statusIndicator.textContent = '🔄 OBNOVUJI PŘIPOJENÍ...';
@@ -374,11 +596,75 @@
                             onToneDetected: (data) => {
                                 if (DOM.frequencyValue) DOM.frequencyValue.textContent = data.frequency + ' Hz';
                                 if (DOM.noteValue) DOM.noteValue.textContent = data.note || '---';
+                                
+                                // NOVÉ: Aktualizace tuneru
+                                if (data.tuner && DOM.tunerNote && DOM.tunerNeedle && DOM.centValue && DOM.frequencyDiff) {
+                                    // Aktualizace noty
+                                    DOM.tunerNote.textContent = data.tuner.note || '---';
+                                    
+                                    // Aktualizace ručičky (-50° až +50°)
+                                    const maxAngle = 45; // stupňů
+                                    const angle = Math.max(-maxAngle, Math.min(maxAngle, data.tuner.cents * 0.9));
+                                    DOM.tunerNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+                                    
+                                    // Barva ručičky podle ladění
+                                    if (data.tuner.isInTune) {
+                                        DOM.tunerNeedle.className = 'tone-meter-tuner-needle in-tune';
+                                    } else {
+                                        DOM.tunerNeedle.className = 'tone-meter-tuner-needle';
+                                    }
+                                    
+                                    // Aktualizace hodnoty centů
+                                    DOM.centValue.textContent = (data.tuner.cents > 0 ? '+' : '') + data.tuner.cents + '¢';
+                                    
+                                    // Barva podle odchylky
+                                    if (data.tuner.isInTune) {
+                                        DOM.centValue.className = 'tone-meter-cent-value in-tune';
+                                    } else if (data.tuner.cents > 0) {
+                                        DOM.centValue.className = 'tone-meter-cent-value sharp';
+                                    } else {
+                                        DOM.centValue.className = 'tone-meter-cent-value flat';
+                                    }
+                                    
+                                    // Cílová frekvence
+                                    if (data.tuner.targetFrequency > 0) {
+                                        DOM.frequencyDiff.textContent = `Cílová frekvence: ${data.tuner.targetFrequency} Hz (${data.tuner.deviation > 0 ? '+' : ''}${data.tuner.deviation} Hz)`;
+                                    } else {
+                                        DOM.frequencyDiff.textContent = 'Cílová frekvence: --- Hz';
+                                    }
+                                }
                             },
                             onVolumeChange: (volume) => {
                                 if (DOM.volumeValue) DOM.volumeValue.textContent = volume + '%';
+                            },
+                            onCalibrationUpdate: (status) => {
+                                // Aktualizace během kalibrace
+                                if (status.phase === 'start') {
+                                    DOM.statusIndicator.className = 'tone-meter-status calibrating';
+                                    DOM.statusIndicator.textContent = '🔧 ' + status.message.toUpperCase();
+                                    DOM.micCalibrationInfo.textContent = status.message;
+                                } else if (status.phase === 'progress') {
+                                    DOM.statusIndicator.textContent = '🔧 ' + status.message.toUpperCase();
+                                    DOM.micCalibrationInfo.textContent = status.message;
+                                } else if (status.phase === 'complete') {
+                                    DOM.statusIndicator.className = 'tone-meter-status active';
+                                    DOM.statusIndicator.textContent = '🎵 AKTIVNÍ - ANALYZUJI ZVUK';
+                                    DOM.micCalibrationInfo.textContent = status.message + ' - Kalibrace úspěšná!';
+                                    
+                                    // Aktualizace posuvníku boost
+                                    const boostValue = Math.round(status.optimalGain * 100);
+                                    DOM.micBoostSlider.value = boostValue;
+                                    DOM.micBoostValue.textContent = status.optimalGain.toFixed(1) + 'x';
+                                } else if (status.phase === 'error') {
+                                    DOM.statusIndicator.className = 'tone-meter-status active';
+                                    DOM.statusIndicator.textContent = '🎵 AKTIVNÍ - ANALYZUJI ZVUK';
+                                    DOM.micCalibrationInfo.textContent = status.message;
+                                }
                             }
                         });
+                        
+                        // Nastavení A4 frekvence
+                        toneMeter.setA4Frequency(parseFloat(DOM.a4FreqInput.value));
                     }
 
                     await toneMeter.start();
@@ -389,13 +675,15 @@
                     toneMeter.createVisualizer(DOM.canvas);
 
                     DOM.statusIndicator.className = 'tone-meter-status active';
-                    DOM.statusIndicator.textContent = '🎵 AKTIVNÍ - ANALYZUJI ZVUK';
+                    DOM.statusIndicator.textContent = '🎵 AKTIVNÍ - SPOUŠTÍM KALIBRACI...';
                     DOM.startBtn.disabled = true;
                     DOM.stopBtn.disabled = false;
+                    DOM.calibrateBtn.disabled = false;
                 } catch (error) {
                     console.error('ToneMeter: Chyba při startu:', error);
                     DOM.statusIndicator.className = 'tone-meter-status error';
                     DOM.statusIndicator.textContent = '❌ CHYBA - POVOLTE MIKROFON';
+                    DOM.micCalibrationInfo.textContent = 'Chyba: Není povolený přístup k mikrofonu';
                 }
             });
 
@@ -407,6 +695,20 @@
                     DOM.statusIndicator.textContent = '⏹️ ZASTAVENO';
                     DOM.startBtn.disabled = false;
                     DOM.stopBtn.disabled = true;
+                    DOM.calibrateBtn.disabled = true;
+                    DOM.micCalibrationInfo.textContent = 'Automatická kalibrace citlivosti se spustí po startu měření';
+                    // NOVÉ: Reset tuneru
+                    if (DOM.tunerNote) DOM.tunerNote.textContent = '---';
+                    if (DOM.tunerNeedle) {
+                        DOM.tunerNeedle.style.transform = 'translateX(-50%) rotate(0deg)';
+                        DOM.tunerNeedle.className = 'tone-meter-tuner-needle';
+                    }
+                    if (DOM.centValue) {
+                        DOM.centValue.textContent = '0¢';
+                        DOM.centValue.className = 'tone-meter-cent-value';
+                    }
+                    if (DOM.frequencyDiff) DOM.frequencyDiff.textContent = 'Cílová frekvence: --- Hz';
+                    
                     if (DOM.volumeValue) DOM.volumeValue.textContent = '0%';
                     if (DOM.frequencyValue) DOM.frequencyValue.textContent = '0 Hz';
                     if (DOM.noteValue) DOM.noteValue.textContent = '---';
