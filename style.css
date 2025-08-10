@@ -929,169 +929,428 @@ footer a:hover {
 }
 
 
+  /* ==================================================
+   HLAVNÍ KONTEJNER TONE METRU
+   ================================================== */
+
 .tone-meter-container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 15px;
-            border: 2px solid #00ff88;
-            color: white;
-            font-family: 'Courier New', monospace;
-        }
+    max-width: 650px;           /* Maximální šířka kontejneru - omezuje velikost na středních zařízeních */
+    margin: 20px auto;          /* Automatické centrování s 20px mezerou nahoře a dole */
+    padding: 20px;              /* Vnitřní odsazení pro obsah */
+    background: linear-gradient(135deg, #1a1a2e, #16213e); /* Diagonální gradient - tmavě modrá */
+    border-radius: 15px;        /* Zaoblené rohy pro moderní vzhled */
+    border: 2px solid #00ff88;  /* Zelený rámeček - hlavní barva aplikace */
+    color: white;               /* Základní bílá barva textu */
+    font-family: 'Courier New', monospace; /* Monospace font pro technický vzhled */
+}
 
-        .tone-meter-title {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #00ff88;
-            margin-bottom: 20px;
-        }
+/* ==================================================
+   HLAVNÍ NADPIS APLIKACE
+   ================================================== */
 
-        .tone-meter-status {
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
+.tone-meter-title {
+    text-align: center;         /* Vycentrovaný text */
+    font-size: 24px;            /* Velký nadpis pro důležitost */
+    font-weight: bold;          /* Tučné písmo pro zvýraznění */
+    color: #00ff88;             /* Zelená barva odpovídající rámečku */
+    margin-bottom: 20px;        /* Spodní mezera od dalších elementů */
+}
 
-        .tone-meter-status.active {
-            background-color: rgba(0, 255, 136, 0.2);
-            border: 1px solid #00ff88;
-        }
+/* ==================================================
+   STAVOVÉ INDIKÁTORY APLIKACE
+   ================================================== */
 
-        .tone-meter-status.inactive {
-            background-color: rgba(136, 136, 136, 0.2);
-            border: 1px solid #888;
-        }
+.tone-meter-status {
+    text-align: center;         /* Centrovaný text stavu */
+    padding: 10px;              /* Vnitřní odsazení pro lepší čitelnost */
+    border-radius: 8px;         /* Mírně zaoblené rohy */
+    margin-bottom: 20px;        /* Mezera od dalších elementů */
+    font-weight: bold;          /* Tučné písmo pro důležitost stavu */
+}
 
-        .tone-meter-status.error {
-            background-color: rgba(255, 68, 68, 0.2);
-            border: 1px solid #ff4444;
-        }
+/* Aktivní stav - mikrofon funguje */
+.tone-meter-status.active {
+    background-color: rgba(0, 255, 136, 0.2); /* Průhledná zelená - 20% průhlednost */
+    border: 1px solid #00ff88;  /* Zelený rámeček */
+}
 
-        .tone-meter-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+/* Neaktivní stav - mikrofon vypnutý */
+.tone-meter-status.inactive {
+    background-color: rgba(136, 136, 136, 0.2); /* Průhledná šedá */
+    border: 1px solid #888;     /* Šedý rámeček */
+}
 
-        .tone-meter-btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #00ff88, #0088ff);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+/* Chybový stav - problém s mikrofonem */
+.tone-meter-status.error {
+    background-color: rgba(255, 68, 68, 0.2); /* Průhledná červená */
+    border: 1px solid #ff4444; /* Červený rámeček */
+}
 
-        .tone-meter-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
-        }
+/* Kalibrace probíhá */
+.tone-meter-status.calibrating {
+    background-color: rgba(255, 165, 0, 0.2); /* Průhledná oranžová */
+    border: 1px solid #ffa500; /* Oranžový rámeček */
+}
 
-        .tone-meter-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+/* ==================================================
+   OVLÁDACÍ TLAČÍTKA
+   ================================================== */
 
-        /* NOVÉ STYLY PRO OVLÁDÁNÍ MIKROFONU */
-        .tone-meter-mic-controls {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid #00ff88;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
+.tone-meter-controls {
+    display: flex;              /* Flexbox pro uspořádání tlačítek */
+    gap: 10px;                  /* 10px mezera mezi tlačítky */
+    justify-content: center;    /* Centrování tlačítek */
+    margin-bottom: 20px;        /* Spodní mezera */
+    flex-wrap: wrap;            /* Zalomení na menších obrazovkách */
+}
 
-        .tone-meter-mic-controls h3 {
-            margin: 0 0 15px 0;
-            text-align: center;
-            color: #00ff88;
-            font-size: 16px;
-        }
+.tone-meter-btn {
+    padding: 12px 24px;         /* Vnitřní odsazení - 12px nahoře/dole, 24px vlevo/vpravo */
+    background: linear-gradient(135deg, #00ff88, #0088ff); /* Gradient ze zelené do modré */
+    border: none;               /* Bez rámečku */
+    border-radius: 8px;         /* Zaoblené rohy */
+    color: white;               /* Bílý text */
+    font-weight: bold;          /* Tučné písmo */
+    cursor: pointer;            /* Ukazatel ruky při najetí */
+    transition: all 0.3s ease;  /* Plynulé animace - 0.3 sekundy */
+    min-width: 120px;           /* Minimální šířka pro konzistentní vzhled */
+}
 
-        .tone-meter-slider-group {
-            margin-bottom: 15px;
-        }
+/* Efekt při najetí myší - pouze pro aktivní tlačítka */
+.tone-meter-btn:hover:not(:disabled) {
+    transform: translateY(-2px); /* Posun o 2px nahoru */
+    box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4); /* Zelený stín */
+}
 
-        .tone-meter-slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 12px;
-            color: #ccc;
-        }
+/* Neaktivní tlačítka */
+.tone-meter-btn:disabled {
+    opacity: 0.5;               /* 50% průhlednost */
+    cursor: not-allowed;        /* Zakázaný kurzor */
+}
 
-        .tone-meter-slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #333;
-            outline: none;
-            -webkit-appearance: none;
-        }
+/* Speciální styl pro tlačítko kalibrace */
+.tone-meter-btn.calibrate {
+    background: linear-gradient(135deg, #ff8800, #ffaa00); /* Oranžový gradient */
+}
 
-        .tone-meter-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #00ff88;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+/* ==================================================
+   SEKCE KALIBRACE A4
+   ================================================== */
 
-        .tone-meter-slider::-webkit-slider-thumb:hover {
-            background: #00cc6a;
-            transform: scale(1.1);
-        }
+.tone-meter-calibration {
+    background: rgba(255, 136, 0, 0.1); /* Průhledné oranžové pozadí */
+    border: 1px solid #ff8800;  /* Oranžový rámeček */
+    border-radius: 10px;        /* Zaoblené rohy */
+    padding: 15px;              /* Vnitřní odsazení */
+    margin-bottom: 20px;        /* Spodní mezera */
+}
 
-        .tone-meter-slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #00ff88;
-            cursor: pointer;
-            border: none;
-        }
+.tone-meter-calibration h3 {
+    margin: 0 0 15px 0;         /* Pouze spodní mezera 15px */
+    text-align: center;         /* Centrovaný nadpis */
+    color: #ff8800;             /* Oranžová barva */
+    font-size: 16px;            /* Střední velikost nadpisu */
+}
 
-        .tone-meter-display {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+.tone-meter-a4-control {
+    display: flex;              /* Flexbox pro uspořádání v řádku */
+    align-items: center;        /* Vertikální centrování */
+    gap: 10px;                  /* Mezera mezi elementy */
+    margin-bottom: 15px;        /* Spodní mezera */
+}
 
-        .tone-meter-info {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-        }
+.tone-meter-a4-input {
+    background: #333;           /* Tmavě šedé pozadí */
+    border: 1px solid #555;     /* Světlejší šedý rámeček */
+    border-radius: 5px;         /* Mírně zaoblené rohy */
+    color: white;               /* Bílý text */
+    padding: 8px 12px;          /* Vnitřní odsazení */
+    font-family: 'Courier New', monospace; /* Stejný font jako aplikace */
+    width: 80px;                /* Pevná šířka pro čísla */
+}
 
-        .tone-meter-label {
-            font-size: 12px;
-            color: #ccc;
-            margin-bottom: 5px;
-        }
+.tone-meter-a4-reset {
+    background: #666;           /* Středně šedé pozadí */
+    border: none;               /* Bez rámečku */
+    border-radius: 5px;         /* Zaoblené rohy */
+    color: white;               /* Bílý text */
+    padding: 8px 12px;          /* Vnitřní odsazení */
+    cursor: pointer;            /* Ukazatel ruky */
+    transition: background 0.2s; /* Plynulá změna pozadí */
+}
 
-        .tone-meter-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #00ff88;
-        }
+.tone-meter-a4-reset:hover {
+    background: #777;           /* Světlejší šedá při najetí */
+}
 
-        .tone-meter-visualizer {
-            width: 100%;
-            height: 150px;
-            border: 1px solid #00ff88;
-            border-radius: 8px;
-            background: #001122;
-        }
+/* ==================================================
+   NASTAVENÍ MIKROFONU
+   ================================================== */
 
+.tone-meter-mic-controls {
+    background: rgba(0, 255, 136, 0.1); /* Průhledné zelené pozadí */
+    border: 1px solid #00ff88;  /* Zelený rámeček */
+    border-radius: 10px;        /* Zaoblené rohy */
+    padding: 15px;              /* Vnitřní odsazení */
+    margin-bottom: 20px;        /* Spodní mezera */
+}
 
+.tone-meter-mic-controls h3 {
+    margin: 0 0 15px 0;         /* Pouze spodní mezera */
+    text-align: center;         /* Centrovaný nadpis */
+    color: #00ff88;             /* Zelená barva */
+    font-size: 16px;            /* Střední velikost */
+}
+
+.tone-meter-slider-group {
+    margin-bottom: 15px;        /* Mezera mezi skupinami posuvníků */
+}
+
+.tone-meter-slider-label {
+    display: flex;              /* Flexbox pro rozložení */
+    justify-content: space-between; /* Mezera mezi texty */
+    margin-bottom: 5px;         /* Malá spodní mezera */
+    font-size: 12px;            /* Menší text pro popisky */
+    color: #ccc;                /* Světle šedá barva */
+}
+
+.tone-meter-slider {
+    width: 100%;                /* Plná šířka kontejneru */
+    height: 6px;                /* Výška posuvné lišty */
+    border-radius: 3px;         /* Zaoblené rohy lišty */
+    background: #333;           /* Tmavě šedé pozadí lišty */
+    outline: none;              /* Bez obrysu při focusu */
+    -webkit-appearance: none;   /* Odstranění výchozího stylu WebKit */
+}
+
+/* Styl jezdce v WebKit prohlížečích (Chrome, Safari) */
+.tone-meter-slider::-webkit-slider-thumb {
+    appearance: none;           /* Odstranění výchozího vzhledu */
+    width: 18px;                /* Šířka jezdce */
+    height: 18px;               /* Výška jezdce */
+    border-radius: 50%;         /* Kruhový tvar */
+    background: #00ff88;        /* Zelená barva */
+    cursor: pointer;            /* Ukazatel ruky */
+    transition: all 0.2s ease;  /* Plynulé animace */
+}
+
+.tone-meter-slider::-webkit-slider-thumb:hover {
+    background: #00cc6a;        /* Tmavší zelená při najetí */
+    transform: scale(1.1);      /* Mírné zvětšení o 10% */
+}
+
+/* Styl jezdce v Firefox */
+.tone-meter-slider::-moz-range-thumb {
+    width: 18px;                /* Šířka jezdce */
+    height: 18px;               /* Výška jezdce */
+    border-radius: 50%;         /* Kruhový tvar */
+    background: #00ff88;        /* Zelená barva */
+    cursor: pointer;            /* Ukazatel ruky */
+    border: none;               /* Bez rámečku */
+}
+
+/* ==================================================
+   ZOBRAZENÍ MĚŘENÝCH HODNOT
+   ================================================== */
+
+.tone-meter-display {
+    display: grid;              /* CSS Grid pro uspořádání */
+    grid-template-columns: repeat(3, 1fr); /* 3 stejné sloupce */
+    gap: 15px;                  /* 15px mezera mezi buňkami */
+    margin-bottom: 20px;        /* Spodní mezera */
+}
+
+.tone-meter-info {
+    text-align: center;         /* Centrovaný obsah */
+    background: rgba(255, 255, 255, 0.1); /* Průhledné bílé pozadí */
+    padding: 15px;              /* Vnitřní odsazení */
+    border-radius: 8px;         /* Zaoblené rohy */
+}
+
+.tone-meter-label {
+    font-size: 12px;            /* Malý text pro popisky */
+    color: #ccc;                /* Světle šedá barva */
+    margin-bottom: 5px;         /* Mezera pod popiskem */
+}
+
+.tone-meter-value {
+    font-size: 20px;            /* Velký text pro hodnoty */
+    font-weight: bold;          /* Tučné písmo */
+    color: #00ff88;             /* Zelená barva pro zdůraznění */
+}
+
+/* ==================================================
+   VIZUALIZÉR SPEKTRA
+   ================================================== */
+
+.tone-meter-visualizer {
+    width: 100%;                /* Plná šířka kontejneru */
+    height: 150px;              /* Pevná výška pro canvas */
+    border: 1px solid #00ff88;  /* Zelený rámeček */
+    border-radius: 8px;         /* Zaoblené rohy */
+    background: #001122;        /* Tmavě modrá barva pozadí */
+}
+
+/* ==================================================
+   VIZUÁLNÍ TUNER - HLAVNÍ KONTEJNER
+   ================================================== */
+
+.tone-meter-tuner {
+    background: rgba(0, 136, 255, 0.1); /* Průhledné modré pozadí */
+    border: 1px solid #0088ff;  /* Modrý rámeček */
+    border-radius: 10px;        /* Zaoblené rohy */
+    padding: 20px;              /* Větší vnitřní odsazení */
+    margin-bottom: 20px;        /* Spodní mezera */
+    
+}
+
+.tone-meter-tuner h3 {
+    margin: 0 0 20px 0;         /* Pouze spodní mezera */
+    text-align: center;         /* Centrovaný nadpis */
+    color: #0088ff;             /* Modrá barva */
+    font-size: 18px;            /* Větší nadpis */
+}
+
+.tone-meter-tuner-display {
+    display: flex;              /* Flexbox pro vertikální uspořádání */
+    flex-direction: column;     /* Sloupec (shora dolů) */
+    align-items: center;        /* Centrování horizontálně */
+    gap: 15px;                  /* Mezera mezi elementy */
+}
+
+/* ==================================================
+   ZOBRAZENÍ AKTUÁLNÍ NOTY
+   ================================================== */
+
+.tone-meter-current-note {
+    font-size: 20px;            /* Velmi velký text pro notu */
+    font-weight: bold;          /* Tučné písmo */
+    color: #0088ff;             /* Modrá barva */
+    text-align: center;         /* Centrovaný text */
+    min-height: 30px;           /* Minimální výška pro stabilitu */
+    display: flex;              /* Flexbox pro centrování */
+    align-items: center;        /* Vertikální centrování */
+    justify-content: center;    /* Horizontální centrování */
+}
+
+/* ==================================================
+   KONTEJNER PRO TUNER JEHLU
+   ================================================== */
+
+.tone-meter-tuner-needle-container {
+    position: relative;         /* Relativní pozice pro absolutní děti */
+    width: 150px;               /* Pevná šířka tuneru */
+    height: 50px;              /* Výška polovičního kruhu */
+    background: rgba(0, 0, 0, 0.3); /* Průhledné tmavé pozadí */
+    border-radius: 50px 50px 0 0; /* Polokruhový tvar (pouze horní rohy) */
+    border: 2px solid #333;     /* Tmavě šedý rámeček */
+    overflow: hidden;           /* Skrytí přečnívajícího obsahu */
+}
+
+/* ==================================================
+   STUPNICE TUNERU
+   ================================================== */
+
+.tone-meter-tuner-scale {
+    position: absolute;         /* Absolutní pozice v kontejneru */
+    top: 10px;                  /* 10px od horního okraje */
+    left: 0;                    /* Od levého okraje */
+    right: 0;                   /* Do pravého okraje */
+    height: 30px;               /* Výška oblasti stupnice */
+}
+
+.tone-meter-scale-mark {
+    position: absolute;         /* Absolutní pozice značek */
+    width: 2px;                 /* Šířka běžné značky */
+    height: 20px;               /* Výška běžné značky */
+    background: #555;           /* Tmavě šedá barva */
+    top: 0;                     /* Od horního okraje stupnice */
+}
+
+.tone-meter-scale-mark.major {
+    width: 3px;                 /* Širší hlavní značky */
+    height: 30px;               /* Vyšší hlavní značky */
+    background: #777;           /* Světlejší šedá */
+}
+
+.tone-meter-scale-mark.center {
+    background: #00ff88;        /* Zelená barva pro střed */
+    width: 4px;                 /* Nejširší centrální značka */
+}
+
+/* ==================================================
+   JEHLA TUNERU
+   ================================================== */
+
+.tone-meter-tuner-needle {
+    position: absolute;         /* Absolutní pozice */
+    bottom: 10px;               /* 10px od spodního okraje */
+    left: 50%;                  /* Na střed horizontálně */
+    width: 4px;                 /* Šířka jehly */
+    height: 70px;               /* Výška jehly */
+    background: linear-gradient(to top, #ff4444, #ffaa00); /* Gradient z červené do oranžové */
+    border-radius: 2px;         /* Mírně zaoblené rohy */
+    transform-origin: bottom center; /* Bod rotace na spodním středu */
+    transform: translateX(-50%) rotate(0deg); /* Centrování a výchozí rotace */
+    transition: transform 0.1s ease-out; /* Plynulý pohyb jehly */
+    box-shadow: 0 0 10px rgba(255, 170, 0, 0.5); /* Oranžový zásvit */
+}
+
+.tone-meter-tuner-needle.in-tune {
+    background: linear-gradient(to top, #00ff88, #00cc6a); /* Zelený gradient při ladění */
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.8); /* Silnější zelený zásvit */
+}
+
+/* ==================================================
+   ZOBRAZENÍ CENTŮ (ODCHYLKA OD NOTY)
+   ================================================== */
+
+.tone-meter-cent-display {
+    display: flex;              /* Flexbox pro uspořádání */
+    justify-content: space-between; /* Mezera mezi elementy */
+    align-items: center;        /* Vertikální centrování */
+    width: 150px;               /* Stejná šířka jako tuner */
+    font-size: 14px;            /* Střední velikost textu */
+}
+
+.tone-meter-cent-value {
+    font-size: 18px;            /* Větší text pro hodnotu centů */
+    font-weight: bold;          /* Tučné písmo */
+    color: #ffaa00;             /* Výchozí oranžová barva */
+    min-width: 80px;            /* Minimální šířka pro stabilitu */
+    text-align: center;         /* Centrovaný text */
+}
+
+.tone-meter-cent-value.in-tune {
+    color: #00ff88;             /* Zelená barva při správném ladění */
+}
+
+.tone-meter-cent-value.sharp {
+    color: #ff6666;             /* Světle červená pro křížky (vysoké tóny) */
+}
+
+.tone-meter-cent-value.flat {
+    color: #6666ff;             /* Světle modrá pro béčka (nízké tóny) */
+}
+
+.tone-meter-frequency-diff {
+    font-size: 12px;            /* Malý text pro doplňující info */
+    color: #aaa;                /* Světle šedá barva */
+    text-align: center;         /* Centrovaný text */
+    margin-top: 5px;            /* Malá horní mezera */
+}
+
+/* ==================================================
+   INFORMACE O KALIBRACI
+   ================================================== */
+
+.tone-meter-calibration-info {
+    background: rgba(255, 165, 0, 0.1); /* Průhledné oranžové pozadí */
+    border: 1px solid #ffa500; /* Oranžový rámeček */
+    border-radius: 8px;         /* Zaoblené rohy */
+    padding: 10px;              /* Vnitřní odsazení */
+    margin-top: 10px;           /* Horní mezera */
+    font-size: 11px;            /* Malý text */
+    text-align: center;         /* Centrovaný text */
+    color: #ffa500;             /* Oranžová barva textu */
+}
