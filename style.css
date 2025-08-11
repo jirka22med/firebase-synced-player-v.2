@@ -1185,7 +1185,7 @@ footer a:hover {
 
 .tone-meter-visualizer {
     width: 100%;                /* Plná šířka kontejneru */
-    height: 150px;              /* Pevná výška pro canvas */
+    height: 290px;              /* Pevná výška pro canvas */
     border: 1px solid #00ff88;  /* Zelený rámeček */
     border-radius: 8px;         /* Zaoblené rohy */
     background: #001122;        /* Tmavě modrá barva pozadí */
@@ -1345,8 +1345,8 @@ footer a:hover {
    ================================================== */
 
 .tone-meter-calibration-info {
-    background: rgba(255, 165, 0, 0.1); /* Průhledné oranžové pozadí */
-    border: 1px solid #ffa500; /* Oranžový rámeček */
+    background: transparent /* Průhledné oranžové pozadí */
+    border: 1px solid transparent; /* Oranžový rámeček */
     border-radius: 8px;         /* Zaoblené rohy */
     padding: 10px;              /* Vnitřní odsazení */
     margin-top: 10px;           /* Horní mezera */
@@ -1354,3 +1354,60 @@ footer a:hover {
     text-align: center;         /* Centrovaný text */
     color: #ffa500;             /* Oranžová barva textu */
 }
+
+
+
+:root {
+    /* Pozadí visualizeru */
+    --tonemeter-bg-normal: #001122;        /* Normální režim */
+    --tonemeter-bg-calibration: #332200;   /* Během kalibrace */
+    
+    /* Barvy sloupků - normální režim */
+    --tonemeter-bar-top: #DC143C;          /* Vrchní část gradientu */
+    --tonemeter-bar-mid: #ADFF2F;          /* Střední část gradientu */
+    --tonemeter-bar-bottom: #1E90FF;       /* Spodní část gradientu */
+    
+    /* Barvy sloupků - kalibrace */
+    --tonemeter-bar-cal-top: #ffaa00;      /* Vrchní část při kalibraci */
+    --tonemeter-bar-cal-mid: #ff8800;      /* Střední část při kalibraci */
+    --tonemeter-bar-cal-bottom: #332200;   /* Spodní část při kalibraci */
+    
+    /* Barvy textu */
+    --tonemeter-text-normal: #00ff88;      /* Text v normálním režimu */
+    --tonemeter-text-calibration: #ffaa00; /* Text během kalibrace */
+    --tonemeter-calibration-text: #ffaa00; /* Text indikátoru kalibrace */
+}
+
+/* Příklad alternativního tmavého motivu */
+.dark-theme {
+    --tonemeter-bg-normal: #1a1a1a;
+    --tonemeter-bg-calibration: #2a1a00;
+    --tonemeter-bar-top: #00cc66;
+    --tonemeter-bar-mid: #0066cc;
+    --tonemeter-bar-bottom: #001a33;
+    --tonemeter-bar-cal-top: #cc8800;
+    --tonemeter-bar-cal-mid: #aa6600;
+    --tonemeter-bar-cal-bottom: #2a1a00;
+    --tonemeter-text-normal: #00cc66;
+    --tonemeter-text-calibration: #cc8800;
+    --tonemeter-calibration-text: #cc8800;
+}
+
+/* Příklad světlého motivu */
+.light-theme {
+    --tonemeter-bg-normal: #f0f8ff;
+    --tonemeter-bg-calibration: #fff8e0;
+    --tonemeter-bar-top: #006644;
+    --tonemeter-bar-mid: #004488;
+    --tonemeter-bar-bottom: #e0f0ff;
+    --tonemeter-bar-cal-top: #886600;
+    --tonemeter-bar-cal-mid: #664400;
+    --tonemeter-bar-cal-bottom: #fff8e0;
+    --tonemeter-text-normal: #006644;
+    --tonemeter-text-calibration: #886600;
+    --tonemeter-calibration-text: #886600;
+}
+
+/* Pro snadné přepínání témat */
+body.dark { @extend .dark-theme; }
+body.light { @extend .light-theme; }
