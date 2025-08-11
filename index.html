@@ -108,8 +108,8 @@
   </div>
 </div>
    
-        <div class="keyboard-container">
-        <div id="popisky"> 
+      <!-- <div class="keyboard-container">
+        <div id="popisky">-->
          <div class="tone-meter-container">
         
         <div class="tone-meter-title">
@@ -145,8 +145,8 @@
                     <span>HLASITOST VSTUPU</span>
                     <span id="inputVolumeValue">100%</span>
                 </div>
-                <input type="range" min="0" max="900" value="100" class="tone-meter-slider" id="inputVolumeSlider">
-                <div style="font-size: 10px; color: #888; text-align: center; margin-top: 2px;">0% - 900% (Extrémní zesílení)</div>
+                <input type="range" min="0" max="10000" value="100" class="tone-meter-slider" id="inputVolumeSlider">
+                <div style="font-size: 10px; color: #888; text-align: center; margin-top: 2px;">0% - 10000% (Extrémní zesílení)</div>
             </div>
             
             <div class="tone-meter-slider-group">
@@ -154,8 +154,8 @@
                     <span>BOOST MIKROFONU</span>
                     <span id="micBoostValue">1.0x</span>
                 </div>
-                <input type="range" min="10" max="900" value="100" class="tone-meter-slider" id="micBoostSlider">
-                <div style="font-size: 10px; color: #888; text-align: center; margin-top: 2px;">0.1x - 9.0x (Pro slabé signály)</div>
+                <input type="range" min="10" max="10000" value="100" class="tone-meter-slider" id="micBoostSlider">
+                <div style="font-size: 10px; color: #888; text-align: center; margin-top: 2px;">0.1x - 1000.0x (Pro slabé signály)</div>
             </div>
             
             <div class="tone-meter-calibration-info" id="micCalibrationInfo">
@@ -246,4 +246,3 @@
     
 </body>
 </html>
-
